@@ -1,5 +1,5 @@
 import spacy
-from spacy import displacy
+import deplacy
 
 phrase = "After the student moved the chair broke." # problematic as a garden path
 # phrase = "The window slides open and -- you sitting down? -- smoke comes out of it." # problematic use of --
@@ -11,7 +11,4 @@ doc = nlp(phrase)
 for w in doc:
     print([(w.text, w.pos_, w.tag_)])
 
-# options={ "fine_grained":"True", "add_lemma": "True", "compact" : "True"}
-options={ "compact":"True"}
-
-displacy.serve(doc, style="dep", options=options)
+deplacy.serve(doc)

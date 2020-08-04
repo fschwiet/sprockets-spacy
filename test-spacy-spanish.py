@@ -1,5 +1,5 @@
 import spacy
-from spacy import displacy
+import deplacy
 
 phrase = "Y para colmo ese proceso comienza en el 94, el año en que estalló el escándalo por Europa del AMI, que fue lo mismo a escala universal."
 
@@ -10,7 +10,4 @@ doc = nlp(phrase)
 for w in doc:
     print([(w.text, w.pos_, w.tag_)])
 
-# options={ "fine_grained":"True", "add_lemma": "True", "compact" : "True"}
-options={ "compact":"True"}
-
-displacy.serve(doc, style="dep", options=options)
+deplacy.serve(doc)
