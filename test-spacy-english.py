@@ -1,7 +1,8 @@
 import spacy
 from spacy import displacy
 
-phrase = "After the student moved the chair broke."
+phrase = "After the student moved the chair broke." # problematic as a garden path
+# phrase = "The window slides open and -- you sitting down? -- smoke comes out of it." # problematic use of --
 
 nlp = spacy.load("en_core_web_lg", style="ent")
 
