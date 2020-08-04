@@ -1,13 +1,14 @@
-I am just playing with spaCy a bit in this repo.
+I am just playing with spaCy and Stanza a bit in this repo.  Observations:
+
+- despacy draws better graphs than displacy
+- Stanza handles english garden path sentence "After the student moved the chair broke." better than SpaCy
+
+Stanza: https://stanfordnlp.github.io/stanza/
+- required pytorch, installed with: pip install torch===1.6.0 torchvision===0.7.0 -f https://download.pytorch.org/whl/torch_stable.html
+
+spaCy: https://spacy.io/
+- downloaded modules: es_core_news_lg, en_core_web_lg
 
 To switch to the python virtual envrionment, run:
-
 - ./env/Scripts/activate
-
-reference: https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
-
-
-modules installed:
-
-es_core_news_lg
-en_core_web_lg
+- documentation on python virtual environments:  https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment
