@@ -11,4 +11,5 @@ doc = nlp(phrase)
 print(doc)
 print(doc.entities)
 
+deplacy.render(doc)
 deplacy.serve(doc)
