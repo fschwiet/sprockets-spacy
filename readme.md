@@ -5,7 +5,11 @@ I am just playing with spaCy and Stanza a bit in this repo.  Observations:
 
 Stanza: https://stanfordnlp.github.io/stanza/
 - required pytorch, installed with: pip install torch===1.6.0 torchvision===0.7.0 -f https://download.pytorch.org/whl/torch_stable.html
-
+- model interpretation:
+  - https://universaldependencies.org/u/pos/all.html
+  - https://universaldependencies.org/u/feat/all.html
+  - https://universaldependencies.org/u/dep/all.html
+  
 spaCy: https://spacy.io/
 - downloaded modules: es_core_news_lg, en_core_web_lg
 
