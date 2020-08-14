@@ -9,17 +9,15 @@ nlp = stanza.Pipeline('es')
 
 
 VerbPhraseInnerConnection = collections.namedtuple("VerbPhraseInnerConnection", ["mark", "head", "tail"])
-VerbPhraseConnection = collections.namedtuple("VerbPhraseInnerConnection", ["mark", "head", "tail", "headPhrase", "tailPhrase"])
+VerbPhraseConnection = collections.namedtuple("VerbPhraseConnection", ["mark", "head", "tail", "headPhrase", "tailPhrase"])
 
 
 class VerbPhrase:
     # A verb and its helper verbs, object complements not included.
 
-    def __init__(self, verbs, sentence):
-
+    def __init__(self, verbs):
         if not any(verbs):
             raise Exception("VerbPhrase given no verbs")
-
         self.verbs = verbs
         self.connections = []
 
@@ -60,7 +58,7 @@ class SprocketSentence:
             if not any(tail_verb_phrases):
                 continue
 
-            [head_verb_phrase] = head_verb_phrases # can only be 1 unless VerbPhrases are erroneously overlapping
+            [head_verb_phrase] = head_verb_phrases  # can only be 1 unless VerbPhrases are erroneously overlapping
             [tail_verb_phrase] = tail_verb_phrases
 
             if head_verb_phrase == tail_verb_phrase:
@@ -73,7 +71,7 @@ class SprocketSentence:
 
 
 def get_word_feature(w, feature):
-    if (not hasattr(w, "features")):
+    if not hasattr(w, "features"):
         w.features = dict(pair.split("=") for pair in w.feats.split("|")) if w.feats is not None else dict()
     return w.features[feature] if feature in w.features else None
 
@@ -108,17 +106,17 @@ def _get_verb_phrases(sentence):
             should_accumulate_word = True
 
         if should_publish_existing and any(accumulator):
-            yield VerbPhrase(accumulator, sentence)
+            yield VerbPhrase(accumulator)
             accumulator = []
 
         if should_accumulate_word:
             accumulator.append(word)
 
     if any(accumulator):
-        yield VerbPhrase(accumulator, sentence)
+        yield VerbPhrase(accumulator)
 
 
-class TestClauseExtraction(unittest.TestCase):
+class TestVerbPhraseExtraction(unittest.TestCase):
     def test_can_find_single_clause(self):
         sprocket = self.run_stanza("Había estado corriendo durante treinta minutos.")
         self.assertEqual(sprocket.summarize_verb_phrases(), ["Había estado corriendo"])
@@ -145,17 +143,4 @@ class TestClauseExtraction(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
