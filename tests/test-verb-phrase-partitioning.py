@@ -14,13 +14,16 @@ class TestVerbPhraseExtraction(unittest.TestCase):
         self.assertEqual(sprocket.summarize_verb_phrases(), ["Había estado corriendo"])
         self.assertEqual(sprocket.summarize_interconnections(), []);
 
-    def test_can_find_multiple_clauses(self):
+    def test_can_link_copula_verb_phrase(self):
+        # the copula verb isn't always at the top of the clause hierarchy
+
         sprocket = self.run_stanza("Me es desagradable que comas haciendo tanto ruido.")
         self.assertEqual(sprocket.summarize_verb_phrases(), ["es", "comas", "haciendo"])
         self.assertEqual(sprocket.summarize_interconnections(), ["es -que- comas"]);
 
-    def test_can_find_multiple_clauses_2(self):
+    def test_can_link_copula_long_verb_phrase(self):
         # Unsourced sentence - created from previous to have a longer copula verb phrase
+
         sprocket = self.run_stanza("Me ha sido desagradable que comas haciendo tanto ruido.")
         self.assertEqual(sprocket.summarize_verb_phrases(), ["ha sido", "comas", "haciendo"])
         self.assertEqual(sprocket.summarize_interconnections(), ["ha sido -que- comas"]);
