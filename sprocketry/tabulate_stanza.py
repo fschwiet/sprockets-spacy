@@ -1,5 +1,6 @@
 from tabulate import tabulate
 
+
 def tabulate_sentence(sentence):
     # Summarizes the contents of a Stanza run in a dense way.
 
