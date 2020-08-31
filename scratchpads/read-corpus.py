@@ -1,10 +1,15 @@
-from io import TextIOWrapper
+import io
+import itertools
+import re
 import stanza
 import tarfile
 import time
 
+from sprocketry.stream_chunker import chunk_stream_by_regex
+
 stanza.download('es')
 nlp = stanza.Pipeline('es')
+nlp.processors.pop("ner")
 
 start_time = time.time()
 
@@ -24,23 +29,20 @@ def print_with_time(message):
 
 file_name = "../data/josecannete-spanish-corpora-raw.tar.bz2"
 print_with_time("Enumerating " + file_name)
-tar = tarfile.open(file_name, "r|bz2")
 
-tarInfo = tar.next()
-
-while tarInfo is not None:
-    if tarInfo.isfile():
-        print_with_time("{0} - {1} bytes".format(tarInfo.name, tarInfo.size))
-
-        if (tarInfo.size < 1000):
-            tar.extract(tarInfo)
-        else:
-            file = tar.extractfile(tarInfo)
-            text = file.read().decode()
-            doc = nlp(text)
-            print_with_time("resulting string size was {0} with {1} sentences".format(len(text), len(doc.sentences)))
-            file.close()
+with tarfile.open(file_name, "r:bz2") as tar:
 
     tarInfo = tar.next()
 
-tar.close()
+    while tarInfo is not None:
+        if tarInfo.isfile():
+            print_with_time("{0} - {1} bytes".format(tarInfo.name, tarInfo.size))
+
+            if (tarInfo.size > 1000):
+                with tar.extractfile(tarInfo) as file:
+                    regex = r'\n'
+                    chunks = chunk_stream_by_regex(regex, io.TextIOWrapper(file, encoding="utf-8"), 1024)
+                    for chunk in itertools.islice(chunks, 20):
+                        print_with_time(chunk)
+
+        tarInfo = tar.next()
