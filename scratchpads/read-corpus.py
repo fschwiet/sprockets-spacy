@@ -5,11 +5,12 @@ import stanza
 import tarfile
 import time
 
+import deplacy
+
 from sprocketry.stream_chunker import chunk_stream_by_regex
 
 stanza.download('es')
-nlp = stanza.Pipeline('es')
-nlp.processors.pop("ner")
+nlp = stanza.Pipeline('es', processors="tokenize,mwt,pos,lemma,depparse")
 
 start_time = time.time()
 
@@ -40,9 +41,13 @@ with tarfile.open(file_name, "r:bz2") as tar:
 
             if (tarInfo.size > 1000):
                 with tar.extractfile(tarInfo) as file:
-                    regex = r'\n'
-                    chunks = chunk_stream_by_regex(regex, io.TextIOWrapper(file, encoding="utf-8"), 1024)
-                    for chunk in itertools.islice(chunks, 20):
-                        print_with_time(chunk)
+                    chunks = chunk_stream_by_regex(r'\n', io.TextIOWrapper(file, encoding="utf-8"), 1024)
+                    for chunk in chunks: #(n for n in itertools.islice(chunks, 20)):
+                        try:
+                            if re.match(r'\w', chunk):
+                                stanza_document = nlp(chunk)
+                                #deplacy.render(stanza_document)
+                        except Exception as ex:
+                            raise Exception('Error running stanza on \"{0}\".'.format(chunk))
 
         tarInfo = tar.next()
