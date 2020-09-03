@@ -10,6 +10,7 @@ class VerbPhrase:
         if not any(verbs):
             raise Exception("VerbPhrase given no verbs")
         self.verbs = verbs
+        self.sentence = sentence
         self.connections = []
 
         self.headOfCopula = None

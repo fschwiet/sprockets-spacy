@@ -11,7 +11,7 @@ class SprocketSentence:
 
     def __init__(self, sentence):
         self.sentence = sentence
-        self.verbPhrases = list(_get_verb_phrases(sentence))
+        self.verbPhrases = list(_merge_open_clausal_complements(_get_verb_phrases(sentence)))
         self.connections = []
 
         for mark in (w for w in sentence.words if w.deprel == "mark"):
@@ -59,26 +59,31 @@ def _get_verb_phrases(sentence):
         should_publish_existing = False
         should_accumulate_word = False
 
-        # any finite verb indicates we're in a new verb phrase
-        if word_is_finite_verb(word):
-            should_publish_existing = True
+        if word.upos == "VERB" or word.upos == "AUX":
             should_accumulate_word = True
 
-        # adverbial clauses like "haciendo tanto ruido" can start with a non-finite verb
-        elif word.deprel == "advcl":
+        if word.upos == "VERB" or word.deprel == "cop" or word.deprel == "ccomp":
             should_publish_existing = True
-            should_accumulate_word = word_is_verb(word)
 
-        # once we're in a verb phrase, keep anything verbal
-        if any(accumulator) and word_is_verb(word):
-            should_accumulate_word = True
+        if should_accumulate_word:
+            accumulator.append(word)
 
         if should_publish_existing and any(accumulator):
             yield VerbPhrase(accumulator, sentence)
             accumulator = []
 
-        if should_accumulate_word:
-            accumulator.append(word)
-
     if any(accumulator):
         yield VerbPhrase(accumulator, sentence)
+
+
+def _merge_open_clausal_complements(verb_phrases):
+    previous_phrase = next(verb_phrases)
+
+    for next_phrase in verb_phrases:
+        if next_phrase.verbs[-1].deprel == 'xcomp':
+            previous_phrase = VerbPhrase(previous_phrase.verbs + next_phrase.verbs, previous_phrase.sentence)
+        else:
+            yield previous_phrase
+            previous_phrase = next_phrase
+
+    yield previous_phrase

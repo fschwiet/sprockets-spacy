@@ -35,7 +35,12 @@ class TestVerbPhraseExtraction(unittest.TestCase):
 
     def test_el_hecho_is_excluded(self):
         sprocket = self.run_stanza("Los resultados escolares también están influidos por el hecho de que la mayoría de los alumnos no pueden pedir a sus padres.")
-        self.assertEqual(sprocket.summarize_verb_phrases(), ["están influidos", "pueden pedir"])
+        self.assertEqual(sprocket.summarize_verb_phrases(), ["están", "pueden pedir"])
+        self.assertEqual(sprocket.summarize_interconnections(), [])
+
+    def test_hmm(self):
+        sprocket = self.run_stanza("Ese es el caballo por el cual hubiera vendido mi casa de tener yo una.")
+        self.assertEqual(sprocket.summarize_verb_phrases(), ["es", "hubiera vendido", "tener"])
         self.assertEqual(sprocket.summarize_interconnections(), [])
 
     @staticmethod
