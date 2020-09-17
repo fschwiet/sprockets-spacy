@@ -25,6 +25,21 @@ class ConjugationKeys(Enum):
     subjunctive_future = "subjunctive/future"
 
     @staticmethod
+    def all():
+        yield ConjugationKeys.infinitive
+        yield ConjugationKeys.gerund
+        yield ConjugationKeys.participle
+        yield ConjugationKeys.present
+        yield ConjugationKeys.preterite
+        yield ConjugationKeys.imperfect
+        yield ConjugationKeys.conditional
+        yield ConjugationKeys.future
+        yield ConjugationKeys.subjunctive
+        yield ConjugationKeys.subjunctive_ra
+        yield ConjugationKeys.subjunctive_se
+        yield ConjugationKeys.subjunctive_future
+
+    @staticmethod
     def all_subjunctive_keys():
         yield ConjugationKeys.subjunctive.value
         yield ConjugationKeys.subjunctive_ra.value
@@ -33,20 +48,33 @@ class ConjugationKeys(Enum):
 
 
 def _load_conjugations(file):
-    with open(file, newline='') as csvfile:
+    with open(file, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
 
         header_row = next(reader)
 
         for row in reader:
 
-            next_conjugation = {}
+            next_conjugation = {"inverted": {}}
+            inverted = next_conjugation["inverted"]
+
+            def set_inverted(verb, label):
+                if verb not in inverted:
+                    inverted[verb] = label
+                elif inverted[verb] == "indicative/present" and label == "indicative/preterite":
+                    inverted[verb] = "indicative/present|preterite"
+                elif inverted[verb] is not label:
+                    raise Exception("Verb {0} was labelled as {1} and {2}".format(verb, inverted[verb], label))
 
             for column in range(len(header_row)):
+                column_label = header_row[column]
                 if column < 3:
-                    next_conjugation[header_row[column]] = row[column]
+                    next_conjugation[column_label] = row[column]
+                    set_inverted(row[column], column_label)
                 else:
-                    next_conjugation[header_row[column]] = row[column].split(";")
+                    next_conjugation[column_label] = row[column].split(";")
+                    for variation in next_conjugation[column_label]:
+                        set_inverted(variation, column_label)
 
             yield next_conjugation
 
@@ -66,6 +94,12 @@ class _ConjugationData:
                 return True
 
         return False
+
+    def get_conjugation_name(self, verb, lemma):
+        conjugations = self.conjugationsByInfinitive[lemma]
+
+        return conjugations["inverted"][verb.lower()]
+
 
 
 _singleton = None
